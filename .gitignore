@@ -1,0 +1,53 @@
+# --- Environment / secrets ---
+.env
+.env.local
+.env.*.local
+*.pem
+
+# --- Python / FastAPI (apps/backend) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+instance/
+*.sqlite3
+
+# --- Node / Next.js (apps/frontend) ---
+node_modules/
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- Data / model artifacts ---
+*.ckpt
+*.pt
+*.h5
+/data/raw/
+/data/processed/
+*.csv
+!docs/**/*.csv
+
+# --- IDE / OS ---
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Misc ---
+*.log
+.cache/
+docs/
