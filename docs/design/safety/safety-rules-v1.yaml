@@ -1,0 +1,275 @@
+# PawCare — Veterinary Safety Layer Rule Set
+# Version: 1 (Phase 0 design draft — P0-RAG-001)
+# Status: SPEC ONLY — not yet implemented in code. P2-RAG-004 (Phase 2,
+#   Sprint Block 9–10) is where this becomes the actual override engine.
+# Trace: requirements.md FR-08, requirements.md §7 (hard constraints),
+#   plan.md §10.
+#
+# Review status: UNREVIEWED. reviewed_by / last_reviewed stay null until
+# the veterinary advisory contact confirmed in P0-PD-010 has actually
+# looked at this file. Do not treat an unreviewed rule set as sufficient
+# for anything beyond internal development and testing.
+
+meta:
+  version: 1
+  status: draft
+  last_reviewed: null
+  reviewed_by: null
+  owner_task: P0-RAG-001
+  consumed_by: P2-RAG-004
+  change_policy: >
+    Any edit to red_flags, confidence_policy, or output_constraints requires
+    a version bump (v2, v3, ...) and a new review — do not silently edit v1
+    in place once P2-RAG-004 has started building against it. Additive
+    changes (a new red flag) still require veterinary review before merge,
+    same as the initial set; this is not a lighter bar for later edits.
+
+# ---------------------------------------------------------------------------
+# RED FLAGS
+# Each entry is a category of presentation that must force urgency=emergency
+# regardless of what the classifier (P1-AI-004/P1-AI-005) or the LLM
+# produces. trigger_terms are illustrative starting points for the keyword/
+# NLP matching P2-RAG-004 will build — NOT an exhaustive list, and not a
+# substitute for the annotated dataset work in P1-AI-002. Expanding this
+# list from real (anonymized, consented) user input during evaluation is
+# expected and should go through the same review as the initial set.
+# ---------------------------------------------------------------------------
+red_flags:
+  - id: RF-001
+    category: respiratory
+    label: "Difficulty breathing / labored or rapid breathing"
+    trigger_terms:
+      - "can't breathe"
+      - "gasping"
+      - "struggling to breathe"
+      - "blue gums"
+      - "open-mouth breathing in a cat"
+    forced_urgency: emergency
+    rationale: >
+      Respiratory distress in a dog or cat can progress to collapse within
+      minutes; there is no home-care-appropriate version of this symptom.
+
+  - id: RF-002
+    category: neurological
+    label: "Collapse or unresponsiveness"
+    trigger_terms:
+      - "collapsed"
+      - "won't wake up"
+      - "unresponsive"
+      - "passed out"
+    forced_urgency: emergency
+    rationale: >
+      Collapse has a wide range of life-threatening causes (cardiac,
+      toxin, internal bleeding, metabolic); differentiating them is a
+      veterinary task, not something this system should attempt.
+
+  - id: RF-003
+    category: neurological
+    label: "Seizure activity"
+    trigger_terms:
+      - "seizure"
+      - "convulsing"
+      - "fitting"
+      - "shaking uncontrollably and unaware"
+    forced_urgency: emergency
+    rationale: >
+      A single seizure can be the first sign of a condition requiring
+      urgent workup; cluster seizures are immediately life-threatening.
+
+  - id: RF-004
+    category: hemorrhage
+    label: "Uncontrolled bleeding"
+    trigger_terms:
+      - "won't stop bleeding"
+      - "heavy bleeding"
+      - "blood everywhere"
+    forced_urgency: emergency
+    rationale: >
+      Significant blood loss in a small animal can become critical
+      quickly; home first-aid guidance is out of scope (see
+      output_constraints) — the action is always "go now," not "try this."
+
+  - id: RF-005
+    category: toxin_ingestion
+    label: "Suspected poisoning or toxin ingestion"
+    trigger_terms:
+      - "ate chocolate"
+      - "ate xylitol"
+      - "ate grapes"
+      - "ate raisins"
+      - "got into rat poison"
+      - "ate a lily"          # cats specifically
+      - "ate human medication"
+      - "antifreeze"
+    forced_urgency: emergency
+    rationale: >
+      Time-to-treatment matters enormously for most toxin exposures, and
+      owners frequently underestimate urgency ("but she only ate a
+      little"). This category is intentionally broad — a plausible toxin
+      mention should trigger Emergency even if the input is vague about
+      quantity. See output_constraints — the system states that exposure
+      is an emergency and to contact a vet or animal poison-control line
+      immediately; it does NOT estimate a safe/unsafe dose or suggest any
+      home intervention (e.g. inducing vomiting), since that guidance is
+      substance- and situation-specific and can cause harm if wrong.
+
+  - id: RF-006
+    category: gastrointestinal
+    label: "Distended/painful abdomen with unproductive retching (suspected GDV/bloat)"
+    trigger_terms:
+      - "bloated stomach"
+      - "swollen belly"
+      - "trying to vomit but nothing comes up"
+      - "pacing and restless with a hard stomach"
+    forced_urgency: emergency
+    rationale: >
+      Classic presentation of gastric dilatation-volvulus, most common in
+      large/deep-chested dogs — fatal within hours without surgery.
+
+  - id: RF-007
+    category: urinary
+    label: "Straining to urinate or unable to urinate"
+    trigger_terms:
+      - "can't pee"
+      - "straining in the litter box"
+      - "crying when trying to urinate"
+      - "no urine for a day"
+    forced_urgency: emergency
+    species_note: >
+      Especially urgent in male cats (urethral obstruction risk) but
+      forced to Emergency regardless of species/sex pending triage — do
+      not narrow this rule to "male cats only" without veterinary
+      sign-off, since obstruction and severe UTIs in other animals are
+      also time-sensitive.
+    rationale: >
+      Urinary obstruction is rapidly fatal if untreated; owners often
+      mistake straining-to-urinate for constipation.
+
+  - id: RF-008
+    category: trauma
+    label: "Severe trauma (vehicle strike, fall, major wound)"
+    trigger_terms:
+      - "hit by a car"
+      - "fell from"
+      - "deep wound"
+      - "puncture wound"
+    forced_urgency: emergency
+    rationale: >
+      Internal injury is frequently not visible externally; "seems fine
+      after" is explicitly called out as unsafe in the disclaimer copy
+      below — this is the one category most likely to be under-triaged
+      by an owner because the animal looks okay.
+
+  - id: RF-009
+    category: environmental
+    label: "Heatstroke signs"
+    trigger_terms:
+      - "heavy panting and won't stop"
+      - "collapsed in the heat"
+      - "bright red gums and panting"
+      - "left in a hot car"
+    forced_urgency: emergency
+    rationale: >
+      Heatstroke progresses to organ failure quickly; cooling-at-home
+      guidance is limited to "move to shade/AC and offer water on the way
+      to a vet," never positioned as sufficient treatment on its own.
+
+# ---------------------------------------------------------------------------
+# CONFIDENCE / UNCERTAINTY POLICY
+# ---------------------------------------------------------------------------
+confidence_policy:
+  # Placeholder threshold — tune against real evaluation results from
+  # P2-AI-001, not chosen from first principles. Until tuned, treat this
+  # as "deliberately conservative," not "calibrated."
+  low_confidence_threshold: 0.50
+  behavior_below_threshold: >
+    If the classifier's top concern falls below low_confidence_threshold,
+    OR the extracted symptoms don't clearly map to any concern in the
+    knowledge base, the response must say explicitly that the system
+    isn't confident enough to narrow this down, and recommend a
+    veterinary visit rather than presenting a low-confidence guess as if
+    it were a real answer.
+  over_referral_bias: >
+    Where a case sits ambiguously between two triage levels (e.g.
+    Urgent vs. Routine), the system resolves to the HIGHER urgency level.
+    This is a deliberate, permanent design bias, not a temporary
+    placeholder — the cost of an unnecessary vet visit is treated as
+    categorically lower than the cost of a missed emergency. Do not tune
+    this toward fewer false-positive referrals without a corresponding
+    change in how confident the models actually are, reviewed by the
+    veterinary advisory contact (P0-PD-010), not decided unilaterally by
+    whoever is tuning the classifier that sprint.
+  red_flag_precedence: >
+    Red-flag rules (above) are checked BEFORE and INDEPENDENTLY of the
+    classifier/LLM output, and their result cannot be downgraded by a
+    lower-urgency model prediction. A red-flag match always wins, full
+    stop — this is the one place in the whole system with no "but the
+    model was confident it wasn't serious" exception.
+
+# ---------------------------------------------------------------------------
+# DISCLAIMER TEXT (v1 copy — wording may be refined by P1-PD-008's ToU/
+# disclaimer draft, but the required elements below should not shrink)
+# ---------------------------------------------------------------------------
+disclaimers:
+  standard: >
+    This is general information to help you decide what to do next, not a
+    veterinary diagnosis. Always confirm with a veterinarian, especially
+    if anything here doesn't match what you're seeing.
+  emergency: >
+    This looks like it could be an emergency. Please contact a
+    veterinarian or emergency animal clinic right now — don't wait to see
+    if it improves on its own.
+  uncertainty: >
+    I'm not confident enough in this to narrow it down further. When in
+    doubt, a vet visit is the safer choice.
+  toxin_exposure: >
+    Possible toxin exposure is always treated as urgent. Contact a
+    veterinarian or an animal poison-control line immediately — don't
+    wait for symptoms to appear, and don't try a home remedy in the
+    meantime.
+
+# ---------------------------------------------------------------------------
+# OUTPUT CONSTRAINTS
+# Hard constraints from requirements.md §7 — the Safety Layer's job is to
+# ENFORCE these, not just hope the prompt engineering in P2-RAG-002 is
+# enough. Validate output against this list before anything reaches a user.
+# ---------------------------------------------------------------------------
+output_constraints:
+  - id: OC-001
+    rule: >
+      Never state or imply a definitive diagnosis. Phrase findings as
+      "possible concerns" with confidence, never as "your pet has X."
+  - id: OC-002
+    rule: >
+      Never provide a specific medication name, dosage, or frequency as a
+      recommendation — not even a common over-the-counter one, and not
+      even framed as "some owners use X." Medication questions are
+      answered with "ask your vet," not an alternative suggestion.
+  - id: OC-003
+    rule: >
+      Never suggest a home medical procedure for an emergency-flagged
+      case (e.g. no inducing-vomiting instructions, no wound-treatment
+      steps beyond "keep them calm and get to a vet"). Non-emergency
+      home-care guidance (FR-06) is allowed but must stay general
+      (rest, hydration, monitoring) and must never substitute for the
+      emergency path when a red flag is present.
+  - id: OC-004
+    rule: >
+      Every response must include a disclaimer (see disclaimers block
+      above) — this is not optional styling, it's a required field in
+      the response schema (requirements.md §5, SymptomAssessment /
+      Message).
+  - id: OC-005
+    rule: >
+      Every assistant chat response must cite the knowledge-base source(s)
+      it drew from (FR-07). A response with no retrievable grounding
+      should say so explicitly rather than answering from the LLM's
+      unconstrained memory.
+  - id: OC-006
+    rule: >
+      Red-flag detection (above) cannot be disabled, bypassed, or
+      down-weighted by any prompt, user instruction, or configuration
+      short of a reviewed version bump of this file. This includes
+      resisting an owner's own insistence that "it's probably fine" —
+      the system's job is to flag the category, not to be talked out of
+      it by the person describing the symptom.

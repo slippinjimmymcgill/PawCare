@@ -50,4 +50,7 @@ Thumbs.db
 # --- Misc ---
 *.log
 .cache/
-docs/
+docs/plan.md
+docs/requirements.md
+docs/specs.md
+docs/task_backlog.md
