@@ -1,0 +1,24 @@
+# PawCare backend dependencies — P1-BE-001 scaffold.
+# Pinned to minor versions (not exact patch) so security patches apply on
+# `pip install -U` without a silent major-version jump. Re-pin exact once
+# P1-BE-002/P1-BE-003 are implemented against a known-working set.
+
+fastapi~=0.115
+uvicorn[standard]~=0.32
+pydantic~=2.9
+pydantic-settings~=2.6
+
+# Database (real usage starts P1-BE-002)
+sqlalchemy~=2.0
+alembic~=1.13
+psycopg[binary]~=3.2
+
+# Auth (real usage starts P1-BE-003)
+python-jose[cryptography]~=3.3
+passlib[bcrypt]~=1.7
+python-multipart~=0.0.12
+
+# Dev / test
+pytest~=8.3
+httpx~=0.27
+ruff~=0.7

@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16
+    container_name: pawcare-postgres
+    environment:
+      POSTGRES_USER: pawcare
+      POSTGRES_PASSWORD: pawcare
+      POSTGRES_DB: pawcare_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pawcare_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pawcare -d pawcare_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pawcare_pg_data:
