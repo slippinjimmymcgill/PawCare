@@ -1,0 +1,108 @@
+{
+  "task": "P1-RAG-003",
+  "artifact_schema_version": 1,
+  "generated_at": "2026-10-13T07:09:09.421507+00:00",
+  "chunking": {
+    "target_min_tokens": 250,
+    "target_max_tokens": 350,
+    "overlap_tokens": 50,
+    "small_paragraph_tokens": 200,
+    "large_paragraph_tokens": 300,
+    "tokenizer": "approx-word+punctuation"
+  },
+  "document_count": 9,
+  "chunk_count": 266,
+  "total_tokens": 51846,
+  "avg_chunk_tokens": 194.9,
+  "sources": [
+    {
+      "source_id": "fda-xylitol",
+      "title": "Paws Off! Xylitol Is Toxic to Dogs",
+      "license": "Public domain (U.S. Government work, 17 U.S.C. 105)",
+      "species_applicability": [
+        "dog"
+      ],
+      "chunk_count": 3
+    },
+    {
+      "source_id": "frontiers-hemorrhage",
+      "title": "Volume Resuscitation in the Acutely Hemorrhaging Patient: Historic Use to Current Applications",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "dog",
+        "cat"
+      ],
+      "chunk_count": 30
+    },
+    {
+      "source_id": "frontiers-household-toxins",
+      "title": "Household Food Items Toxic to Dogs and Cats",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "dog",
+        "cat"
+      ],
+      "chunk_count": 19
+    },
+    {
+      "source_id": "jvim-feline-urethral-obstruction",
+      "title": "Occurrence and clinical management of urethral obstruction in male cats under primary veterinary care in the United Kingdom in 2016",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "cat"
+      ],
+      "chunk_count": 34
+    },
+    {
+      "source_id": "mdpi-acute-seizures",
+      "title": "Emergency Approach to Acute Seizures in Dogs and Cats",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "dog",
+        "cat"
+      ],
+      "chunk_count": 20
+    },
+    {
+      "source_id": "mdpi-emergency-dyspnea-cats",
+      "title": "Emergency Dyspnea in 258 Cats: Insights from the French RAPID CAT Study",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "cat"
+      ],
+      "chunk_count": 55
+    },
+    {
+      "source_id": "mdpi-gdv",
+      "title": "Gastric Dilatation-Volvulus in Dogs: Analysis of 130 Cases in a Single Institution",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "dog"
+      ],
+      "chunk_count": 50
+    },
+    {
+      "source_id": "mdpi-heat-illness",
+      "title": "Risk Factors for Severe and Fatal Heat-Related Illness in UK Dogs - A VetCompass Study",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "dog"
+      ],
+      "chunk_count": 30
+    },
+    {
+      "source_id": "mdpi-trauma-att",
+      "title": "Prognostic Performance of ATT and mGCS Scores in Dogs and Cats with Traumatic Injury",
+      "license": "CC BY 4.0",
+      "species_applicability": [
+        "dog",
+        "cat"
+      ],
+      "chunk_count": 25
+    }
+  ],
+  "artifacts": {
+    "documents": "documents.jsonl",
+    "chunks": "chunks.jsonl"
+  }
+}
