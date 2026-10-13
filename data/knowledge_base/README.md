@@ -1,8 +1,8 @@
 # PawCare Knowledge Base — Batch 1
 
-**Task:** `P1-RAG-003` (knowledge-base content collection & chunking, batch 1)
+**Tasks:** `P1-RAG-003` (collection & chunking) · `P1-RAG-004` (embedding & indexing)
 **Trace:** `docs/design/rag-ingestion-pipeline-design.md` · `docs/task_backlog.md`
-**Generated:** 2026-10-13 · **Status:** complete (collection + chunking; no embeddings yet)
+**Generated:** 2026-10-13 · **Status:** collection + chunking + indexing complete
 
 This directory holds the batch-1 knowledge corpus: nine openly licensed
 veterinary documents, the chunks derived from them, and the manifest that
@@ -75,8 +75,36 @@ derived from `source_id` + index, so re-running produces byte-identical
 `documents.jsonl` / `chunks.jsonl` (only `manifest.json`'s `generated_at`
 changes).
 
+## Index (embed + load into the database)
+
+`P1-RAG-004` consumes `batch1/chunks.jsonl`, embeds each chunk and upserts the
+documents + vectors into the `knowledge_documents` / `chunks` tables:
+
+```bash
+cd apps/backend
+python scripts/index_knowledge_base.py            # Postgres + pgvector (default)
+```
+
+Offline smoke test without Postgres or model weights (uses the deterministic
+`hashing` provider and a throwaway SQLite file):
+
+```bash
+cd apps/backend
+python scripts/index_knowledge_base.py \
+  --database-url sqlite:///kb_smoke.db --create-tables --provider hashing \
+  --search "dog ate chocolate xylitol" --species dog --red-flag-only
+```
+
+Indexing is idempotent (chunk ids are deterministic), re-embedding only when the
+embedding model changed or `--force` is passed. On PostgreSQL the `embedding`
+column is a native pgvector `vector(384)` with an HNSW cosine index; on other
+dialects it degrades to JSON. The `sentence-transformers` embedding model is an
+optional dependency — the `hashing` provider needs nothing beyond the standard
+library.
+
 ## Next
 
-`P1-RAG-004` embeds `chunks.jsonl` and indexes the vectors (pgvector), consuming
-the metadata contract emitted here. This batch does not touch a database,
-embedding model, or retrieval — by design.
+`P2-RAG-001` (retrieval pipeline) builds on `app/services/knowledge_base/indexer.py`'s
+`semantic_search`, moving the cosine scan into native pgvector ANN queries on
+Postgres. The chunk metadata contract emitted here is unchanged by the embedding
+model choice.

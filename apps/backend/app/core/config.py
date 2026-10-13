@@ -56,6 +56,16 @@ class Settings(BaseSettings):
     LOCAL_STORAGE_DIR: str = "uploads"
     MAX_ATTACHMENT_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB limit
 
+    # ── Knowledge base embeddings (P1-RAG-004) ──────────────────
+    # "sentence_transformers" is the design's local default
+    # (`all-MiniLM-L6-v2`) and needs the optional sentence-transformers
+    # package. "hashing" is a deterministic, dependency-free baseline for
+    # offline dev/CI. EMBEDDING_DIM is fixed at the vector column's width.
+    EMBEDDING_PROVIDER: str = "sentence_transformers"
+    EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L6-v2"
+    EMBEDDING_DIM: int = 384
+    EMBEDDING_BATCH_SIZE: int = 64
+
     # ── CORS ─────────────────────────────────────────────────────
     FRONTEND_ORIGIN: str = "http://localhost:3000"
 

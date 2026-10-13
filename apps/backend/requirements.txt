@@ -12,6 +12,13 @@ pydantic-settings~=2.6
 sqlalchemy~=2.0
 alembic~=1.13
 psycopg[binary]~=3.2
+# Embeddings (P1-RAG-004): pgvector's SQLAlchemy type for the Postgres vector
+# column. The extension itself is installed server-side by the
+# `knowledge_base_tables` migration. The optional `sentence-transformers`
+# package (the design's local embedding default) is intentionally NOT pinned
+# here — it pulls in PyTorch and is only needed on hosts that run the real
+# model; offline/dev/CI use EMBEDDING_PROVIDER=hashing.
+pgvector~=0.3
 
 # Auth (real usage starts P1-BE-003)
 python-jose[cryptography]~=3.3

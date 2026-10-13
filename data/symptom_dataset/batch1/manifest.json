@@ -1,0 +1,113 @@
+{
+  "task": "P1-AI-002",
+  "artifact_schema_version": 1,
+  "generated_at": "2026-10-13T08:02:03.557372+00:00",
+  "generation": {
+    "seed": 20261013,
+    "strategy": "knowledge_base_seeds + rule_based_synthetic_augmentation"
+  },
+  "taxonomy": {
+    "symptom_concepts": 37,
+    "urgency_levels": [
+      "emergency",
+      "urgent",
+      "routine",
+      "home_care"
+    ],
+    "body_systems": [
+      "gastrointestinal",
+      "respiratory",
+      "urinary",
+      "neurologic",
+      "dermal",
+      "musculoskeletal",
+      "ophthalmic",
+      "hematologic",
+      "cardiovascular",
+      "toxicology",
+      "trauma",
+      "environmental",
+      "general"
+    ]
+  },
+  "split_policy": {
+    "train": 0.7,
+    "validation": 0.15,
+    "test": 0.15
+  },
+  "stats": {
+    "example_count": 476,
+    "span_count": 1155,
+    "by_split": {
+      "held_out": 16,
+      "test": 85,
+      "train": 311,
+      "validation": 64
+    },
+    "by_urgency": {
+      "emergency": 188,
+      "home_care": 24,
+      "routine": 190,
+      "urgent": 74
+    },
+    "by_species": {
+      "cat": 237,
+      "dog": 239
+    },
+    "red_flag_coverage": {
+      "RF-001": 21,
+      "RF-002": 21,
+      "RF-003": 21,
+      "RF-004": 20,
+      "RF-005": 21,
+      "RF-006": 21,
+      "RF-007": 21,
+      "RF-008": 21,
+      "RF-009": 21
+    },
+    "top_concerns": {
+      "gastroenteritis": 365,
+      "insufficient_information": 361,
+      "dental_disease": 356,
+      "fracture": 32,
+      "pancreatitis": 32,
+      "skin_infection": 31,
+      "respiratory_distress": 21,
+      "seizure_disorder": 21,
+      "chocolate_toxicity": 21,
+      "rodenticide_toxicity": 21
+    },
+    "source_mix": {
+      "handbook_heldout": 16,
+      "synthetic_augmented": 460
+    }
+  },
+  "public_dataset_audit": [
+    {
+      "dataset": "PetEVAL (Farrell et al., ACL BioNLP 2025)",
+      "license": "access-restricted (real EHRs)",
+      "status": "refused"
+    },
+    {
+      "dataset": "karenwky/pet-health-symptoms-dataset (HuggingFace)",
+      "license": "MIT",
+      "status": "cleared_but_deferred"
+    },
+    {
+      "dataset": "Kaggle Animal/Veterinary health datasets",
+      "license": "ambiguous / unspecified",
+      "status": "refused"
+    },
+    {
+      "dataset": "Zenodo Dog Health Vitals Dataset",
+      "license": "CC BY 4.0",
+      "status": "out_of_scope"
+    }
+  ],
+  "expert_review_status": "pending",
+  "expert_review_note": "Held-out examples are frozen but not yet reviewed by the veterinary advisory contact (requirements.md §7 assumption); do not report held-out metrics as validated until that review happens.",
+  "artifacts": {
+    "examples": "examples.jsonl",
+    "held_out": "held_out.jsonl"
+  }
+}
