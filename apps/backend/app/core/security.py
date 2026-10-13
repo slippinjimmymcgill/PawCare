@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
+import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -15,23 +15,24 @@ from app.db.session import get_db
 from app.models.user import User
 
 settings = get_settings()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 INVALIDATED_TOKENS: set[str] = set()
 PASSWORD_RESET_TOKENS: dict[str, dict[str, Any]] = {}
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    pwd_bytes = password.encode("utf-8")[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode("utf-8")
 
 
 def create_access_token(subject: str, expires_delta: timedelta | None = None) -> str:
     expires_in = expires_delta or timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
-    expires_at = datetime.now(timezone.utc) + expires_in
+    expires_at = datetime.now(UTC) + expires_in
     payload = {"sub": subject, "exp": expires_at}
     return jwt.encode(payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
 
@@ -57,11 +58,11 @@ def is_token_revoked(token: str) -> bool:
 
 def generate_password_reset_token(email: str) -> str:
     token = jwt.encode(
-        {"sub": email, "exp": datetime.now(timezone.utc) + timedelta(minutes=15)},
+        {"sub": email, "exp": datetime.now(UTC) + timedelta(minutes=15)},
         settings.JWT_SECRET_KEY,
         algorithm=settings.JWT_ALGORITHM,
     )
-    PASSWORD_RESET_TOKENS[token] = {"email": email, "expires_at": datetime.now(timezone.utc) + timedelta(minutes=15)}
+    PASSWORD_RESET_TOKENS[token] = {"email": email, "expires_at": datetime.now(UTC) + timedelta(minutes=15)}
     return token
 
 
@@ -71,7 +72,7 @@ def verify_password_reset_token(token: str, email: str) -> bool:
     payload = PASSWORD_RESET_TOKENS[token]
     if payload["email"] != email:
         return False
-    if datetime.now(timezone.utc) > payload["expires_at"]:
+    if datetime.now(UTC) > payload["expires_at"]:
         PASSWORD_RESET_TOKENS.pop(token, None)
         return False
     return True

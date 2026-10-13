@@ -46,11 +46,15 @@ class Settings(BaseSettings):
     LLM_API_KEY: str = ""
     LLM_MODEL: str = ""
 
-    # ── Object storage (blocked on P0-OPS-005, used from P1-BE-006) ─
-    OBJECT_STORAGE_PROVIDER: str = ""
+    # ── Object storage (P1-BE-006) ──────────────────────────────
+    OBJECT_STORAGE_PROVIDER: str = "local"
     OBJECT_STORAGE_BUCKET: str = ""
     OBJECT_STORAGE_KEY: str = ""
     OBJECT_STORAGE_SECRET: str = ""
+    OBJECT_STORAGE_REGION: str = "us-east-1"
+    OBJECT_STORAGE_ENDPOINT_URL: str = ""
+    LOCAL_STORAGE_DIR: str = "uploads"
+    MAX_ATTACHMENT_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB limit
 
     # ── CORS ─────────────────────────────────────────────────────
     FRONTEND_ORIGIN: str = "http://localhost:3000"

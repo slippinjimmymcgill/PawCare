@@ -28,12 +28,15 @@ export function clearAuthToken() {
 export async function apiRequest<T>(
   path: string,
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" = "GET",
-  body?: Record<string, unknown>,
+  body?: Record<string, unknown> | FormData,
   token?: string | null,
 ): Promise<T> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-  };
+  const headers: Record<string, string> = {};
+
+  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -43,7 +46,7 @@ export async function apiRequest<T>(
     method,
     cache: "no-store",
     headers,
-    body: body ? JSON.stringify(body) : undefined,
+    body: isFormData ? body : body ? JSON.stringify(body) : undefined,
   });
 
   const payload = await response.json().catch(() => ({}));
@@ -59,8 +62,8 @@ export async function apiRequest<T>(
   return payload as T;
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
-  return apiRequest<T>(path, "GET");
+export async function apiGet<T>(path: string, token?: string | null): Promise<T> {
+  return apiRequest<T>(path, "GET", undefined, token);
 }
 
 export async function apiPost<T>(
@@ -70,3 +73,37 @@ export async function apiPost<T>(
 ): Promise<T> {
   return apiRequest<T>(path, "POST", body, token);
 }
+
+export async function apiPut<T>(
+  path: string,
+  body: Record<string, unknown>,
+  token?: string | null,
+): Promise<T> {
+  return apiRequest<T>(path, "PUT", body, token);
+}
+
+export async function apiDelete<T>(
+  path: string,
+  token?: string | null,
+): Promise<T> {
+  return apiRequest<T>(path, "DELETE", undefined, token);
+}
+
+export async function apiUpload<T>(
+  path: string,
+  formData: FormData,
+  token?: string | null,
+): Promise<T> {
+  return apiRequest<T>(path, "POST", formData, token);
+}
+
+export function getAttachmentUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  const cleanBase = API_BASE_URL.replace(/\/+$/, "");
+  const cleanPath = url.startsWith("/") ? url : `/${url}`;
+  return `${cleanBase}${cleanPath}`;
+}
+

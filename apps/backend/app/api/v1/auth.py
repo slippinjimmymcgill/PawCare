@@ -1,24 +1,22 @@
 """PawCare — Auth API endpoints."""
 
-from datetime import timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.security import (
-    decode_access_token,
+    create_access_token,
     generate_password_reset_token,
     get_current_user,
     get_password_hash,
     is_token_revoked,
+    remove_password_reset_token,
     revoke_token,
     security,
     verify_password,
     verify_password_reset_token,
-    create_access_token,
-    remove_password_reset_token,
 )
 from app.db.session import get_db
 from app.models.user import User

@@ -52,7 +52,7 @@ export default function RegisterPage() {
     <section className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
       <p className="text-sm font-semibold uppercase tracking-[0.16em] text-violet-600">New account</p>
       <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">Register</h1>
-      <p className="mt-2 text-slate-600">Create your PawCare profile to start tracking your pet's care.</p>
+      <p className="mt-2 text-slate-600">Create your PawCare profile to start tracking your pet&apos;s care.</p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
         <label className="block text-sm font-medium text-slate-700">

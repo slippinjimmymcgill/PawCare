@@ -2,18 +2,22 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.core.config import get_settings
 from app.db import session as db_session
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
-from app.models.user import User
 
 settings = get_settings()
 
-engine = create_engine("sqlite:///:memory:")
+engine = create_engine(
+    "sqlite:///:memory:",
+    connect_args={"check_same_thread": False},
+    poolclass=StaticPool,
+)
 TestingSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 Base.metadata.create_all(bind=engine)
 

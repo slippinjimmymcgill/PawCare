@@ -1,15 +1,36 @@
-"""
-PawCare — Medication Pydantic schemas. Trace: FR-03, requirements.md §5.
+from __future__ import annotations
 
-Placeholder only — real schemas land with P1-BE-005, matching
-docs/design/models/medication.py. Note (carried from that model's own
-docstring): the `notes` field must never be written to by the AI/RAG
-services — owner-entered only. Worth re-flagging here since this is the
-first touchpoint a future API-layer implementer will see.
-"""
+from datetime import date, datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MedicationBase(BaseModel):
-    """Placeholder — fields added in P1-BE-005."""
+    name: str = Field(..., min_length=1, max_length=120)
+    dosage: str | None = Field(default=None, max_length=255)
+    frequency: str | None = Field(default=None, max_length=255)
+    start_date: date | None = None
+    end_date: date | None = None
+    notes: str | None = None
+
+
+class MedicationCreate(MedicationBase):
+    pass
+
+
+class MedicationUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=1, max_length=120)
+    dosage: str | None = Field(default=None, max_length=255)
+    frequency: str | None = Field(default=None, max_length=255)
+    start_date: date | None = None
+    end_date: date | None = None
+    notes: str | None = None
+
+
+class MedicationRead(MedicationBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    pet_id: str
+    created_at: datetime
+    updated_at: datetime
