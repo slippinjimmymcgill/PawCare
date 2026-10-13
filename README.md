@@ -2,8 +2,7 @@
 
 **An AI-Powered Pet Health Assistant for Intelligent Symptom Assessment, Health Monitoring, and Preventive Pet Care**
 
-Final Year Design Project — Department of Computer Science, NUST
-Author: Ismail Jamal Tariq (480321) · Supervisor: Dr. Shah Khalid · Co-supervisor: Mr. Muhammad Daud Abdullah Asif
+Final Year Design Project
 
 ---
 
