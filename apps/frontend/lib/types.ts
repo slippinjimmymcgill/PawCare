@@ -112,3 +112,54 @@ export interface AttachmentUploadResponse {
   mime_type: string;
   size_bytes: number;
 }
+
+// Dashboard types (FR-10)
+export interface DashboardWeightPoint {
+  date: string;
+  weight_kg: number;
+}
+
+export type DashboardReminderKind = "vaccination" | "medication";
+export type DashboardReminderStatus = "overdue" | "due_soon" | "active" | "scheduled";
+
+export interface DashboardReminder {
+  id: string;
+  kind: DashboardReminderKind;
+  title: string;
+  due_date: string | null;
+  status: DashboardReminderStatus;
+}
+
+export interface DashboardAssessment {
+  id: string;
+  date: string;
+  summary: string;
+  urgency: string;
+}
+
+export interface DashboardRecordSummary {
+  total: number;
+  visits: number;
+  weight_logs: number;
+  notes: number;
+  last_record_date: string | null;
+  active_medications: number;
+  upcoming_vaccinations: number;
+}
+
+export interface DashboardSummary {
+  pet_id: string;
+  pet_name: string;
+  generated_at: string;
+  weight_trend: DashboardWeightPoint[];
+  reminders: DashboardReminder[];
+  assessments: DashboardAssessment[];
+  record_summary: DashboardRecordSummary;
+}
+
+export interface DashboardOverview {
+  pet_count: number;
+  upcoming_reminders: number;
+  active_medications: number;
+  total_records: number;
+}

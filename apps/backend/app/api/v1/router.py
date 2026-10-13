@@ -9,13 +9,23 @@ include it here — nothing in main.py should need to change.
 
 from fastapi import APIRouter
 
-from app.api.v1 import admin, assessments, assistant, auth, pets, records, reminders
+from app.api.v1 import (
+    admin,
+    assessments,
+    assistant,
+    auth,
+    dashboard,
+    pets,
+    records,
+    reminders,
+)
 
 api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(auth.router)
 api_router.include_router(pets.router)
 api_router.include_router(records.router)
+api_router.include_router(dashboard.router)
 api_router.include_router(assessments.router)
 api_router.include_router(assistant.router)
 api_router.include_router(reminders.router)
