@@ -7,6 +7,10 @@ fastapi~=0.115
 uvicorn[standard]~=0.32
 pydantic~=2.9
 pydantic-settings~=2.6
+# Required by Pydantic's EmailStr (used in app/schemas/user.py). Optional at
+# the Pydantic level, so it must be pinned explicitly or runtime import of the
+# auth schemas fails with ModuleNotFoundError on a clean install.
+email-validator~=2.3
 
 # Database (real usage starts P1-BE-002)
 sqlalchemy~=2.0
